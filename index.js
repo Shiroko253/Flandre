@@ -3,48 +3,70 @@ const { Client, GatewayIntentBits, REST, Routes, Collection } = require('discord
 const fs = require('fs');
 const path = require('path');
 
-// 環境變數
+// ✨ 嘿嘿，先偷偷把祕密環境變數讀進來 ✨
 const TOKEN = process.env.TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
-const OWNER_ID = process.env.OWNER_ID; // 你的 Discord UID
+const OWNER_ID = process.env.OWNER_ID; // 嗯？就是主人的 UID 啦♪
 
-// 建立 Discord client
+// 🧩 建立 Discord client（intents 要小心設定，不然會炸掉喔）
 const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent // ← 少了這個就聽不到人說什麼啦！
+    ]
 });
 
-// 指令集合
+// 🎀 把指令都收集起來，放進小盒子裡
 client.commands = new Collection();
 
-// 讀取指令並註冊
+// 📚 現在開始翻 command 資料夾，找到能用的指令～
 const commands = [];
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+const failList = [];
+
 for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    // 只註冊有 SlashCommandBuilder 的指令
-    if (command.data && typeof command.data.toJSON === 'function') {
-        client.commands.set(command.data.name, command);
-        commands.push(command.data.toJSON());
+    try {
+        const command = require(`./commands/${file}`);
+        // 只挑有 SlashCommandBuilder 的孩子才收
+        if (command.data && typeof command.data.toJSON === 'function') {
+            client.commands.set(command.data.name, command);
+            commands.push(command.data.toJSON());
+        } else {
+            // 咦？格式怪怪的，先丟進壞掉清單！
+            failList.push({ file, name: command.data?.name || '(未知)' });
+        }
+    } catch (err) {
+        // 讀取爆炸了 (砰！)
+        failList.push({ file, name: '(讀取失敗)' });
     }
 }
 
-// 註冊 slash commands 到指定 guild
+// 🪄 把指令註冊到伺服器裡去，咻～
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 (async () => {
     try {
-        await rest.put(
+        const data = await rest.put(
             Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
             { body: commands }
         );
-        console.log('Guild 專屬指令已註冊');
+        console.log(`成功裝進去 ${data.length}/${commandFiles.length} 個指令了喔！`);
+        if (failList.length > 0) {
+            console.error('這些小傢伙註冊失敗了：');
+            failList.forEach(fail => {
+                console.error(`檔案：${fail.file}，名字：${fail.name}`);
+            });
+        } else {
+            console.log('耶～所有指令都乖乖註冊成功了！');
+        }
     } catch (error) {
-        console.error('Guild 指令註冊失敗:', error);
+        console.error('啊咧，Guild 註冊 API 爆炸啦:', error);
     }
 })();
 
-// 讀取事件
+// 🎉 接下來翻 events 資料夾，把活動也綁好
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
@@ -56,17 +78,17 @@ for (const file of eventFiles) {
     }
 }
 
-// 指令執行/權限判斷
+// 🎀 有人戳 slash 指令了！快看快看～
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
     const command = client.commands.get(interaction.commandName);
     if (!command) return;
 
-    // ownerOnly 權限判斷
+    // 只有主人才可以用的指令喔，哼哼
     if (command.ownerOnly) {
         if (interaction.user.id !== OWNER_ID) {
-            return await interaction.reply({ content: '只有主人才能使用這個指令！', ephemeral: true });
+            return await interaction.reply({ content: '只有主人才能用這個啦！', ephemeral: true });
         }
     }
 
@@ -75,16 +97,16 @@ client.on('interactionCreate', async interaction => {
     } catch (error) {
         console.error(error);
         if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ content: '執行指令時發生錯誤！', ephemeral: true });
+            await interaction.followUp({ content: '嗚嗚，剛剛執行指令時爆炸了！', ephemeral: true });
         } else {
-            await interaction.reply({ content: '執行指令時發生錯誤！', ephemeral: true });
+            await interaction.reply({ content: '嗚嗚，剛剛執行指令時爆炸了！', ephemeral: true });
         }
     }
 });
 
-// 登入
+// 🌙 登入，進去伺服器裡陪大家玩囉！
 client.login(TOKEN);
 
-// 關閉流程
+// 🌸 當主人叫我關閉的時候，我就乖乖收尾
 process.on('SIGINT', () => require('./shutdown')(client));
 process.on('SIGTERM', () => require('./shutdown')(client));
