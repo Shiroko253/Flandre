@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,58 +7,78 @@ module.exports = {
         .addUserOption(option => 
             option.setName('user')
                 .setDescription('要解放的成員')
-                .setRequired(true)),
-    ownerOnly: false,
-    async execute(interaction, client) {
-        // 權限檢查：執行者必須是管理員
-        if (!interaction.member.permissions.has('Administrator')) {
+                .setRequired(true)
+        ),
+
+    async execute(interaction) {
+        // 🔒 權限檢查：必須是管理員
+        if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
             const noPermEmbed = new EmbedBuilder()
-                .setTitle('🚫 芙蘭魔法無效唷！')
-                .setDescription('只有管理員才可以用這個指令喔，芙蘭才不會亂聽話呢！')
-                .setColor(0x808080)
-                .setThumbnail(client.user.displayAvatarURL())
-                .setFooter({ text: 'By 芙蘭朵露・Flandre Scarlet 🧸' });
-            return await interaction.reply({ embeds: [noPermEmbed], flags: 64 });
+                .setColor(0xff3366)
+                .setTitle('🚫 權限不夠唷！')
+                .setDescription('只有 **管理員** 才能使用這個指令，芙蘭才不會亂聽話呢！')
+                .setFooter({
+                    text: '芙蘭朵露・斯卡蕾特 | 東方Project',
+                    iconURL: interaction.client.user.displayAvatarURL()
+                });
+            return interaction.reply({ embeds: [noPermEmbed], flags: 64 });
         }
 
         const member = interaction.options.getMember('user');
         if (!member) {
             const noUserEmbed = new EmbedBuilder()
-                .setTitle('❓ 芙蘭找不到這個人唷！')
-                .setDescription('指定的成員不存在，芙蘭要怎麼解放他呢？')
-                .setColor(0x808080)
-                .setThumbnail(client.user.displayAvatarURL())
-                .setFooter({ text: 'By 芙蘭朵露・Flandre Scarlet 🧸' });
-            return await interaction.reply({ embeds: [noUserEmbed], flags: 64 });
+                .setColor(0xffc300)
+                .setTitle('❓ 找不到成員')
+                .setDescription('芙蘭找不到這個人唷，要怎麼解放他呢？')
+                .setFooter({
+                    text: '芙蘭朵露・斯卡蕾特 | 東方Project',
+                    iconURL: interaction.client.user.displayAvatarURL()
+                });
+            return interaction.reply({ embeds: [noUserEmbed], flags: 64 });
         }
 
-        // 檢查目標是否有被 timeout
+        // ⏳ 檢查是否真的被 timeout
         if (!member.communicationDisabledUntil || member.communicationDisabledUntil < new Date()) {
             const notTimeoutEmbed = new EmbedBuilder()
-                .setTitle('🦋 芙蘭沒發現封印！')
-                .setDescription(`${member.user} 沒有被芙蘭封印，不用解放啦！`)
                 .setColor(0xffd700)
-                .setThumbnail(client.user.displayAvatarURL())
-                .setFooter({ text: 'By 芙蘭朵露・Flandre Scarlet 🧸' });
-            return await interaction.reply({ embeds: [notTimeoutEmbed], flags: 64 });
+                .setTitle('🦋 芙蘭沒發現封印')
+                .setDescription(`${member.user} 沒有被芙蘭封印，不需要解放啦！`)
+                .setFooter({
+                    text: '芙蘭朵露・斯卡蕾特 | 東方Project',
+                    iconURL: interaction.client.user.displayAvatarURL()
+                });
+            return interaction.reply({ embeds: [notTimeoutEmbed], flags: 64 });
         }
 
         try {
             await member.timeout(null, `由 ${interaction.user.tag} 的芙蘭解封`);
+
+            const now = new Date();
             const embed = new EmbedBuilder()
-                .setTitle('🦋 芙蘭的解放魔法！🦋')
-                .setDescription(`恭喜！${member.user} 已被芙蘭解放啦！\n\n可以快樂聊天囉，要乖乖的唷(｡•̀ᴗ-)✧`)
                 .setColor(0xffd700)
-                .setThumbnail(client.user.displayAvatarURL())
-                .setFooter({ text: 'By 芙蘭朵露・Flandre Scarlet 🧸' });
+                .setTitle('🦋 芙蘭的解放魔法！🦋')
+                .setDescription(`恭喜！${member.user} 已經被芙蘭解放啦！\n可以快樂聊天囉，要乖一點唷～`)
+                .addFields(
+                    { name: '👤 成員', value: `${member.user}`, inline: true },
+                    { name: '⏰ 時間', value: now.toLocaleString('zh-TW', { hour12: false, timeZone: 'Asia/Taipei' }), inline: true },
+                    { name: '👮 操作管理員', value: interaction.user.tag, inline: false }
+                )
+                .setFooter({
+                    text: '芙蘭朵露・斯卡蕾特 | 東方Project',
+                    iconURL: interaction.client.user.displayAvatarURL()
+                })
+                .setTimestamp();
+
             await interaction.reply({ embeds: [embed] });
         } catch (error) {
             const errorEmbed = new EmbedBuilder()
-                .setTitle('💔 芙蘭的魔法失敗啦……')
-                .setDescription(`芙蘭沒辦法解放這位成員！\n\n請主人幫芙蘭檢查一下機器人權限和成員身分組吧！`)
                 .setColor(0x808080)
-                .setThumbnail(client.user.displayAvatarURL())
-                .setFooter({ text: 'By 芙蘭朵露・Flandre Scarlet 🧸' });
+                .setTitle('💔 芙蘭的魔法失敗啦……')
+                .setDescription('芙蘭沒辦法解放這位成員！\n請檢查機器人是否有 **管理成員** 權限，或身分組位置是否足夠高。')
+                .setFooter({
+                    text: '芙蘭朵露・斯卡蕾特 | 東方Project',
+                    iconURL: interaction.client.user.displayAvatarURL()
+                });
             await interaction.reply({ embeds: [errorEmbed], flags: 64 });
         }
     }
