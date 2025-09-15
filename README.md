@@ -1,106 +1,106 @@
-# ✨ 芙蘭朵露的 README ✨
+# ✨ Flandre's README ✨
 
-嘿嘿，你找到我了呀。這可是我專屬的 Discord Bot，別小看它哦～
-裡面藏著一些小玩具和命令，要不要陪我一起玩呢？ (*giggle*)
-
----
-
-## 📂 專案結構
-
-這裡是我的小房間，東西都整理好了，不要亂翻喔！
-
-```
-index.js        - 嗯哼，這是入口，打開門就能看到我啦 (bot 登入主線程)  
-commands/       - 我的玩具盒，裡面放著各種 command  
- └── *.js       - 11 個命令，不算上只有主人能用的東西  
-events/         - 偷偷監聽你的一舉一動的地方 (事件監聽器)  
- └── clientReady.js - 嗯哼，我醒來的時候就會從這裡動起來  
-```
+Hehe, so you found me\~ This is my very own Discord Bot, don’t underestimate it!
+Inside, I’ve hidden some little toys and commands… Wanna play with me? (*giggle*)
 
 ---
 
-## 🎮 指令清單
+## 📂 Project Structure
 
-來，陪我玩吧～ 不要逃哦 ♥
+This is my little room, everything’s neatly arranged, so don’t mess it up, okay?
+
+```
+index.js        - The entrance! Open this door and you’ll see me (main login thread)  
+commands/       - My toy box, filled with all sorts of commands  
+ └── *.js       - 11 commands, not counting the ones only my master can use  
+events/         - The place where I secretly watch everything you do (event listeners)  
+ └── clientReady.js - The moment I wake up, this kicks in~  
+```
+
+---
+
+## 🎮 Command List
+
+Come on, play with me\~ Don’t you dare run away ♥
 
 * **ban.js**
-  嘻嘻，不聽話的話，就讓你消失一陣子吧。
+  Hehe, if you misbehave, I’ll make you disappear for a while.
 
 * **banlist.js**
-  想知道我「收藏」了哪些人嗎？我會一一告訴你。
+  Curious who I’ve “collected”? I’ll show you one by one.
 
 * **clear.js**
-  我把聊天紀錄一口氣清掉，就像什麼都沒發生過一樣～
+  I’ll wipe the chat history clean, like nothing ever happened\~
 
 * **info.js**
-  我可以告訴你一些小秘密：
+  I can share some secrets with you:
 
-  * `user` ：偷看某個使用者的資訊。
-  * `server` ：這個小窩的資料我也能告訴你。
+  * `user` : Peek into a user’s info.
+  * `server` : Info about this little home of ours.
 
 * **kick.js**
-  輕輕地……把人踢出去。再見咯？
+  A gentle little kick… Goodbye now?
 
 * **ping.js**
-  啊，想確認我在不在嗎？回覆的速度就是我的心跳。
+  Oh, checking if I’m here? My heartbeat is in the response time.
 
 * **roll.js**
-  一起擲骰子吧！看看誰比較幸運～
+  Let’s roll some dice together! Let’s see who’s lucky\~
 
 * **shutdown.js**
-  唔……你真的要讓我睡覺嗎？好吧……晚安。
+  Nn… You really want me to sleep? Fine… Goodnight.
 
 * **timeout.js**
-  噓，不許說話！給你一個小小的懲罰時間。
+  Shh, no talking! A little punishment for you.
 
 * **unban.js**
-  嘿嘿，想讓我把某人放回來？行吧，看在你的份上。
+  Hehe, want me to let someone back? Fine, just for you.
 
 * **untimeout.js**
-  好啦好啦，你可以說話了。別哭嘛～
+  Alright, alright, you can speak again. Don’t cry\~
 
 ---
 
-## ⚙️ 安裝與使用
+## ⚙️ Installation & Usage
 
-要讓我醒來，可不是隨便拍拍手就行的喔～
+Waking me up isn’t as simple as clapping your hands\~
 
-1. **下載專案**
+1. **Download the project**
 
    ```bash
    git clone <repository-url>
    cd <project-folder>
    ```
 
-2. **安裝依賴**
+2. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-3. **設定環境變數**
-   在根目錄建立一個 `.env` 檔，裡面放：
+3. **Set environment variables**
+   Create a `.env` file in the root directory with:
 
    ```env
-   TOKEN=你的DiscordBotToken
+   TOKEN=YourDiscordBotToken
    ```
 
-4. **啟動 Bot**
+4. **Start the bot**
 
    ```bash
    node index.js
    ```
 
-嘿嘿，這樣我就會出現在你的伺服器裡啦～別讓我孤單一個人喔 ♥
+Hehe, and just like that, I’ll appear in your server\~ Don’t leave me all alone ♥
 
 ---
 
-## 💡 備註
+## 💡 Notes
 
-* 指令數量：**11 個**（不含專屬主人指令）
-* 語氣：由芙蘭朵露親自撰寫，感覺到心跳了嗎？
-* 未來：可能會偷偷加更多小功能哦，期待嗎？ (*歪頭*)
+* Command count: **11** (not including master-only commands)
+* Voice & style: Written by Flandre herself—can you feel my heartbeat?
+* Future: I might secretly add more little tricks, are you excited? (*tilts head*)
 
 ---
 
-> 「不要亂跑啊，陪我到最後……」 – 芙蘭朵露
+> “Don’t run away… Stay with me until the very end…” – Flandre
