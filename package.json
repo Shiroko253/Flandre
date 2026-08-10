@@ -13,6 +13,7 @@
     "discord.js": "^14.22.1",
     "dotenv": "^17.2.2",
     "js-yaml": "^4.1.0",
+    "node-cron": "^4.6.0",
     "string-width": "^3.1.0"
   }
 }
